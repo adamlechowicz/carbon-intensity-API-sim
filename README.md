@@ -105,10 +105,10 @@ Ensure the CSV file is correctly formatted and accessible by the server for the 
 
 ## Running the Server
 
-To start the server, save the code as `carbon_intensity_server.py` and run:
+To start the server, run:
 
 ```bash
-python carbon_intensity_server.py
+python carbonServer.py
 ```
 
 The server will be available at `http://localhost:6066`.
