@@ -32,6 +32,12 @@ This Flask API simulates a real-time carbon intensity service based on pre-exist
     "error": "Invalid timestamp format. Use ISO format."
   }
   ```
+- **400 Bad Request**: 
+  ```json
+  {
+    "error": "Requested time not available in local carbon intensity data."
+  }
+  ```
 
 **Example Request**:
 ```bash
