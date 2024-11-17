@@ -58,8 +58,10 @@ def get_carbon_intensity():
     # Determine the corresponding row in the carbon intensity data
     carbon_time = initial_datetime + datetime.timedelta(hours=elapsed_hours)
     rounded_time = carbon_time.replace(minute=0, second=0, microsecond=0)  # Round down to the nearest hour
+    future_time = rounded_time + datetime.timedelta(hours=48)
     # convert to iso format
     rounded_time = rounded_time.isoformat()
+    future_time = future_time.isoformat()
 
     # Retrieve the intensity value
     # note that rounded_time is a datetime object so we can index the carbon_data DataFrame with it
@@ -68,9 +70,14 @@ def get_carbon_intensity():
     except KeyError:
         print(f"Carbon intensity data not available for the requested time: {rounded_time}")
         return jsonify({"error": "Carbon intensity data not available for the requested time."}), 404
-
     carbon_intensity = row['carbon_intensity_avg']
-    return jsonify({"timestamp": rounded_time, "carbon_intensity": carbon_intensity}), 200
+    
+    # Also retrieve the upper and lower bounds on future carbon intensities for up to 48 hours after the current (rounded) time
+    future_carbon_intensity = carbon_data.loc[rounded_time:future_time]
+    lower_bound = future_carbon_intensity['carbon_intensity_avg'].min()
+    upper_bound = future_carbon_intensity['carbon_intensity_avg'].max()
+
+    return jsonify({"timestamp": rounded_time, "carbon_intensity": carbon_intensity, "upper_bound": upper_bound, "lower_bound": lower_bound}), 200
 
 if __name__ == "__main__":
     # run the server on port 6066
