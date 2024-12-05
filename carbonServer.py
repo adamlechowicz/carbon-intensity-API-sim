@@ -57,6 +57,12 @@ def get_carbon_intensity():
 
     # Determine the corresponding row in the carbon intensity data
     carbon_time = initial_datetime + datetime.timedelta(hours=elapsed_hours)
+    # if the carbon time is beyond the last time in the data, reset the ACTUAL_DATETIME (so that we loop back to the beginning of the data)
+    if carbon_time > carbon_data.index[-1]:
+        actual_datetime = current_datetime
+        user_registry[user_id] = initial_datetime, actual_datetime
+        carbon_time = initial_datetime
+        elapsed_hours = 0
     rounded_time = carbon_time.replace(minute=0, second=0, microsecond=0)  # Round down to the nearest hour
     future_time = rounded_time + datetime.timedelta(hours=48)
     # convert to iso format
