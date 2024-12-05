@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 import pandas as pd
 import datetime
 import hashlib
+import pytz
+
+utc = pytz.UTC
 
 # Load the carbon intensity data
 data_file_path = 'us-east-1.csv'  # Replace with the correct path to your CSV file
@@ -40,6 +43,8 @@ def register():
 
 @app.route('/get_carbon_intensity', methods=['GET'])
 def get_carbon_intensity():
+    global user_registry
+
     user_id = request.args.get('user_id')
     if user_id not in user_registry:
         return jsonify({"error": "User ID not found. Register first."}), 404
@@ -56,10 +61,11 @@ def get_carbon_intensity():
     elapsed_hours = int(time_delta.total_seconds() // 60)
 
     # Determine the corresponding row in the carbon intensity data
-    carbon_time = initial_datetime + datetime.timedelta(hours=elapsed_hours)
+    carbon_time = (initial_datetime + datetime.timedelta(hours=elapsed_hours)).replace(tzinfo=utc)
     # if the carbon time is beyond the last time in the data, reset the ACTUAL_DATETIME (so that we loop back to the beginning of the data)
     if carbon_time > carbon_data.index[-1]:
         actual_datetime = current_datetime
+        initial_datetime = carbon_data.index[0]
         user_registry[user_id] = initial_datetime, actual_datetime
         carbon_time = initial_datetime
         elapsed_hours = 0
