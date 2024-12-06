@@ -3,12 +3,21 @@ import pandas as pd
 import datetime
 import hashlib
 import pytz
+import argparse
 
 utc = pytz.UTC
 
+parser = argparse.ArgumentParser(description='Run carbon intensity API server.')
+parser.add_argument('--carbon-trace', type=str, default='us-east-1.csv', help='Data file for carbon intensity')
+args = parser.parse_args()
+
 # Load the carbon intensity data
-data_file_path = 'us-east-1.csv'  # Replace with the correct path to your CSV file
-carbon_data = pd.read_csv(data_file_path)
+data_file_path = args.carbon_trace  # Replace with the correct path to your CSV file
+try:
+    carbon_data = pd.read_csv(data_file_path)
+except FileNotFoundError:
+    print(f"Carbon intensity data file not found: {data_file_path}")
+    exit(1)
 carbon_data['datetime'] = pd.to_datetime(carbon_data['datetime'])  # Ensure timestamps are datetime objects
 # make the datetime column the index
 carbon_data.set_index('datetime', inplace=True)
