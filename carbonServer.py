@@ -8,7 +8,7 @@ import argparse
 utc = pytz.UTC
 
 parser = argparse.ArgumentParser(description='Run carbon intensity API server.')
-parser.add_argument('--carbon-trace', type=str, default='us-east-1.csv', help='Data file for carbon intensity')
+parser.add_argument('--carbon-trace', type=str, default='PJM.csv', help='Data file for carbon intensity')
 args = parser.parse_args()
 
 # Load the carbon intensity data
